@@ -49,9 +49,31 @@ void push(address_info_t* node) {
 
 // Count the stats
 
-// Check if page fault
+// Get number of page fault
+int get_page_fault() {
+  int counter = 0;
+  address_info_t *curr = head;
+
+  while(curr != NULL) {
+    double prev_time = curr->time;
+    double new_time = mem_benchmark(curr + sizeof(address_info_t), DATA_SIZE);
+
+    if (new_time > PF_INDICATOR_FACTOR * prev_time) {
+      counter++;
+    }
+
+    curr = curr->next;
+  }
+
+  return counter;
+}
 
 int main() {
+  int consecutive_page_fault = 0;
+
+  // TODO: This should be constant
+  // This is the maximum number of page fault before we can decide if we have reached the full memory
+  int max_consecutive_page_fault = 10;
 
   while(1) {
     address_info_t *addr;
@@ -67,8 +89,17 @@ int main() {
     push(addr);
 
     total_memory += BLOCK_SIZE;
+    int num_of_page_fault = get_page_fault();
 
-    printf("Total memory requested: %lu\n", total_memory);
+    // If zero page fault in the middle, we reset the counter
+    if (num_of_page_fault > 0) 
+      consecutive_page_fault++;
+    else
+      consecutive_page_fault = 0;
+
+    printf("Total memory requested: %lu, Page fault: %d\n", total_memory, num_of_page_fault);
+
+    if (consecutive_page_fault > max_consecutive_page_fault) break;
   }
 
   printf("Predicted memory: %lu\n", total_memory);
