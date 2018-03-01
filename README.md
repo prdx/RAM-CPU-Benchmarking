@@ -66,8 +66,8 @@ swapon: /swap: insecure permissions 0644, 0600 suggested.
 ## How to run
 
 ```
-make clean
-make ram_predictor
+make
+./ram_predictor
 ```
 
 ## Result
@@ -82,3 +82,38 @@ ubuntu@ip-172-31-82-67:~/hw5$ free -h
 Mem:           990M        131M        740M        164K        118M        721M
 Swap:          2.0G         25M        2.0G
 ```
+
+# CPU Cache Predictor
+
+## Design
+
+See [paper](https://www2.eecs.berkeley.edu/Pubs/TechRpts/1993/CSD-93-767.pdf) for definition.
+
+Following the paper, we want to measure:
+
+1. CPU cache size
+2. CPU line size
+3. Associativity
+
+
+### CPU cache size
+
+### CPU line size
+
+### Associativity
+
+## How to run
+
+```
+make 
+./cache_predictor
+```
+
+## Result
+
+
+### CPU cache size
+
+### CPU line size
+
+### Associativity
