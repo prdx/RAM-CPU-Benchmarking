@@ -43,6 +43,8 @@ In this case, the hyperparameter is 10 which means if we get 10 consecutive page
 This program was run on AWS ubuntu machine with 1GB of memory.
 No memory exhaustive program was running when we run the experiment.
 
+The output is in byte.
+
 ## Preparation
 
 AWS by default does not have swap memory. So we need to define the swap memory, otherwise our process either be killed by the OS or just get stuck.
@@ -68,7 +70,8 @@ In our experiment, we get predicted memory: 943718400
 We run the `t2.micro` instance on AWS.
 
 ```
-ubuntu@ip-172-31-82-67:~/hw5$ free
+ubuntu@ip-172-31-82-67:~/hw5$ free -h
               total        used        free      shared  buff/cache   available
-Mem:        1014540       70248      895800         148       48492      839864
+Mem:           990M        131M        740M        164K        118M        721M
+Swap:          2.0G         25M        2.0G
 ```
