@@ -63,6 +63,13 @@ ubuntu@ip-172-31-82-67:~/hw5$ sudo swapon /swap
 swapon: /swap: insecure permissions 0644, 0600 suggested.
 ```
 
+## How to run
+
+```
+make clean
+make ram_predictor
+```
+
 ## Result
 
 In our experiment, we get predicted memory: 943718400
