@@ -54,13 +54,10 @@ ubuntu@ip-172-31-82-67:~/hw5$ sudo dd if=/dev/zero of=/swap bs=1M count=2048
 2048+0 records in
 2048+0 records out
 2147483648 bytes (2.1 GB, 2.0 GiB) copied, 32.5451 s, 66.0 MB/s
-ubuntu@ip-172-31-82-67:~/hw5$ sudo apt-get install neovim
-Display all 148 possibilities? (y or n)
 ubuntu@ip-172-31-82-67:~/hw5$ sudo mkswap /swap
 Setting up swapspace version 1, size = 2 GiB (2147479552 bytes)
 no label, UUID=06095ea7-5e05-4597-ade7-c49250b912f9
 ubuntu@ip-172-31-82-67:~/hw5$ sudo swapon /swap
-swapon: /swap: insecure permissions 0644, 0600 suggested.
 ```
 
 ## How to run
