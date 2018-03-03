@@ -18,8 +18,6 @@
 // Number of trials to access the memory
 #define TRIALS 1000000
 
-// Total number of integer we get in a block
-#define BLOCKS PAGE_SIZE / sizeof(int)
 
 // Create storage
 int arr[MAX_SIZE];
@@ -32,33 +30,30 @@ void fill_array(int size) {
 }
 
 void generate_cache_performance(int number_of_pages) {
-  struct timespec start_t, end_t;
+  clock_t start, end;
 
-  int jump = PAGE_SIZE/sizeof(int);
+  int blocks = PAGE_SIZE / sizeof(int);
   // Floating value to avoid optimization from compiler
   // We also use this to calculate the average time to this experiment
   double n = 0.0;
   double total_time = 0;
 
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+  start = clock();
 
   // TODO: Do the experiment here
   int i = 0;
   for(; i < TRIALS; i++) {
     int j = 0;
-    for(; j < number_of_pages * jump; j += jump) {
+    for(; j < number_of_pages * blocks; j += blocks) {
       arr[j] += 1;
       n += 1.0;
     }
   }
 
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-  unsigned long start = 1000000000*start_t.tv_sec + start_t.tv_nsec;
-  unsigned long end = 1000000000*end_t.tv_sec + end_t.tv_nsec;
-  unsigned long delta = end - start;
+  end = clock();
+  unsigned long delta = ((double) (end - start));
   total_time += delta;
-  printf("%u, %lf\n", number_of_pages, total_time / (n));
-
+  printf("%u, %lf\n", number_of_pages, total_time / n);
 }
 
 int main() {
@@ -75,7 +70,7 @@ int main() {
   }
   
   // Initiate array
-  fill_array(1048576);
+  fill_array(10485760);
 
   printf("Number of trials: %d\n", TRIALS);
   printf("Generating cache performance data...\n");
