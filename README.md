@@ -24,7 +24,7 @@ typedef struct __address_info_t {
 } address_info_t;
 ```
 
-Everytime we request a new memory, we will try to record the number of pagefault we get.
+Everytime we request a new memory, we will try to record the number of pagefault we get by trying to allocate the pages that have been allocated previously and compare the time. 
 
 We get the number of page fault if the time needed to accessing the same memory region is PF_INDICATOR_FACTOR * the initial time.
 
@@ -69,7 +69,7 @@ make
 
 ## Result
 
-In our experiment, we get predicted memory: 943718400
+In our experiment, we get predicted memory: 943.718.400 bytes or ~945Mb.
 
 We run the `t2.micro` instance on AWS.
 
@@ -93,24 +93,15 @@ Following the paper, we want to measure:
 3. Associativity
 
 
-### CPU cache size
-
-### CPU line size
-
-### Associativity
-
 ## How to run
 
 ```
 make 
-./cache_predictor
+./cache_predictor 1 // Run the cache size
+./cache_predictor 2 // Run the cache line size
+
 ```
 
 ## Result
 
-
-### CPU cache size
-
-### CPU line size
-
-### Associativity
+Please refer to the ram_predictor.ipynb or ram_predictor.pdf.

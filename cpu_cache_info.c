@@ -19,5 +19,9 @@ int main() {
   line = sysconf(_SC_LEVEL2_CACHE_LINESIZE);
   printf("level 2 cache size = %ldK, assoc = %ld, line size = %ld\n", size, assoc, line);
 
+  size = sysconf(_SC_LEVEL3_CACHE_SIZE) / pow(2, 10);
+  assoc = sysconf(_SC_LEVEL3_CACHE_ASSOC);
+  line = sysconf(_SC_LEVEL3_CACHE_LINESIZE);
+  printf("level 3 cache size = %ldK, assoc = %ld, line size = %ld\n", size, assoc, line);
   return 0;
 }

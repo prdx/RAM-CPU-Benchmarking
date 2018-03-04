@@ -74,7 +74,7 @@ double get_element_access_time(int index) {
   delta = end - start;
 
   if (mode == 2) {
-    printf("%d, %lf\n", index, delta);
+  printf("%d, %lf\n", index, delta);
   }
 
   return delta;
@@ -98,7 +98,7 @@ void run_cache_line_test() {
 
     if (i == 1024 || i == 2048 || i == 4096 || i == 8192) {
       int j = 1;
-      while (j <= 10) {
+      while (j <= 17) {
         get_element_access_time(i + j);
         j++;
       } 
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
   switch(mode) {
     case 1:
       // Cache size test
-      printf("------------------------------------\n");
+      printf("page,cpu_time\n");
       run_cache_size_test();
       break;
     case 2:
