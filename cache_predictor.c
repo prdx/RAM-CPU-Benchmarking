@@ -21,6 +21,9 @@
 // Create storage
 int arr[MAX_SIZE];
 
+// Operation mode
+int mode;
+
 void fill_array(int size) {
   int i = 0;
   for(; i < size; i++) {
@@ -52,7 +55,10 @@ void generate_cache_performance(int number_of_pages) {
   end = clock();
   unsigned long delta = ((double) (end - start));
   total_time += delta;
-  printf("%u, %lf\n", number_of_pages, total_time / n);
+
+  if (mode == 1) {
+    printf("%u, %lf\n", number_of_pages, total_time / n);
+  }
 }
 
 double get_element_access_time(int index) {
@@ -67,7 +73,9 @@ double get_element_access_time(int index) {
   end = 1000000000 * end_t.tv_sec + end_t.tv_nsec;
   delta = end - start;
 
-  printf("%d, %lf\n", index, delta);
+  if (mode == 2) {
+    printf("%d, %lf\n", index, delta);
+  }
 
   return delta;
 }
@@ -75,9 +83,6 @@ double get_element_access_time(int index) {
 void run_cache_size_test() {
   // Initiate array
   fill_array(10485760);
-
-  printf("Number of trials: %d\n", TRIALS);
-  printf("Generating cache performance data...\n");
 
   int i = 2;
   while (i <= 4096) {
@@ -103,7 +108,6 @@ void run_cache_line_test() {
 }
 
 int main(int argc, char *argv[]) {
-  int mode;
   char *p;
   if (argc < 2) {
     printf("Usage: ./cache_predictor operation_number\n" \
@@ -136,13 +140,11 @@ int main(int argc, char *argv[]) {
       break;
     case 2:
       // Cache line test
-      printf("------------------------------------\n");
+      run_cache_size_test();
+      printf("element,time\n");
       run_cache_line_test();
       break;
   }
-
-
-  
 
   return 0;
 }
