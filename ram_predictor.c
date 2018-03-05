@@ -9,7 +9,7 @@
 
 #define PAGE_SIZE sysconf(_SC_PAGESIZE)
 #define BLOCK_SIZE PAGE_SIZE * 1024
-#define DATA_SIZE PAGE_SIZE - sizeof(address_info_t) 
+#define DATA_SIZE BLOCK_SIZE - sizeof(address_info_t) 
 
 // If the time we get is greater than PF_INDICATOR_FACTOR * avg time, then 
 // it means it is page fault
@@ -22,17 +22,15 @@ unsigned total_element = 0;
 
 // Measure the memset performance and return the time
 double mem_benchmark(address_info_t *addr, size_t size) {
-  struct timespec start_t, end_t;
-  double start, end, delta_time;
+  clock_t start, end;
   char byte = 'c';
+  double delta_time;
 
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+  start = clock();
   // Memset here
   memset(addr, byte, size);
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-  start = 1000000000 * start_t.tv_sec + start_t.tv_nsec;
-  end = 1000000000 * end_t.tv_sec + end_t.tv_nsec;
-  delta_time = end - start;
+  end = clock();
+  delta_time = ((double) (end - start));
   return delta_time;
 }
 
