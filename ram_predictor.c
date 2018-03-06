@@ -8,12 +8,17 @@
 
 
 #define PAGE_SIZE sysconf(_SC_PAGESIZE)
-#define BLOCK_SIZE PAGE_SIZE * 1024
+#define BLOCK_SIZE 4194304
+
+// This is the maximum number of page fault before we can decide if 
+// we have reached the full memory
 #define DATA_SIZE BLOCK_SIZE - sizeof(address_info_t) 
 
 // If the time we get is greater than PF_INDICATOR_FACTOR * avg time, then 
 // it means it is page fault
 #define PF_INDICATOR_FACTOR 2
+
+#define MAX_CONSECUTIVE_PF 10
 
 uint64_t total_memory = 0;
 address_info_t *head = NULL;
@@ -71,10 +76,6 @@ int get_page_fault() {
 int main() {
   int consecutive_page_fault = 0;
 
-  // TODO: This should be constant
-  // This is the maximum number of page fault before we can decide if we have reached the full memory
-  int max_consecutive_page_fault = 10;
-
   while(1) {
     address_info_t *addr;
 
@@ -99,7 +100,8 @@ int main() {
 
     printf("Total memory requested: %lu, Page fault: %d\n", total_memory, num_of_page_fault);
 
-    if (consecutive_page_fault > max_consecutive_page_fault) break;
+    if (consecutive_page_fault > MAX_CONSECUTIVE_PF)
+      break;
   }
 
   printf("Predicted memory: %lu\n", total_memory);
