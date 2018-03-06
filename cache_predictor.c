@@ -32,7 +32,8 @@ void fill_array(int size) {
 }
 
 void generate_cache_performance(int number_of_pages) {
-  clock_t start, end;
+  struct timespec start_t, end_t;
+  double start, end, delta;
 
   int blocks = PAGE_SIZE / sizeof(int);
   // Floating value to avoid optimization from compiler
@@ -40,10 +41,14 @@ void generate_cache_performance(int number_of_pages) {
   double n = 0.0;
   double total_time = 0;
 
-  start = clock();
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
 
   // Do the experiment here
   int i = 0;
+
+  // We repeat many many times because we want to avoid the test being over-
+  // shadowed by the clock function call. If we make the loops larger, then
+  // the noise by the clock function call, become less significant
   for(; i < TRIALS; i++) {
     int j = 0;
     for(; j < number_of_pages * blocks; j += blocks) {
@@ -52,11 +57,13 @@ void generate_cache_performance(int number_of_pages) {
     }
   }
 
-  end = clock();
-  unsigned long delta = ((double) (end - start));
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+  start = 1000000000 * start_t.tv_sec + start_t.tv_nsec;
+  end = 1000000000 * end_t.tv_sec + end_t.tv_nsec;
+  delta = end - start;
   total_time += delta;
 
-  if (mode == 1) {
+  if (mode == 1 || mode == 3) {
     printf("%u, %lf\n", number_of_pages, total_time / n);
   }
 }
@@ -73,8 +80,8 @@ double get_element_access_time(int index) {
   end = 1000000000 * end_t.tv_sec + end_t.tv_nsec;
   delta = end - start;
 
-  if (mode == 2) {
-  printf("%d, %lf\n", index, delta);
+  if (mode == 2 || mode == 3) {
+    printf("%d, %lf\n", index, delta);
   }
 
   return delta;
@@ -91,12 +98,14 @@ void run_cache_size_test() {
   }
 } 
 
+// Cache line for L1
 void run_cache_line_test() {
   int i  = 2;
   while (i <= 10000) {
     get_element_access_time(i);
 
-    if (i == 1024 || i == 2048 || i == 4096 || i == 8192) {
+    // Added here just to proof the cache line
+    if (i == 1024) {
       int j = 1;
       while (j <= 17) {
         get_element_access_time(i + j);
@@ -107,12 +116,28 @@ void run_cache_line_test() {
   }
 }
 
+void run_associativity_test() {
+  int j = 0;
+  while (j < 20) {
+    int i = 2;
+    while (i <= 256) {
+      generate_cache_performance(i);
+      i = i * 2;
+    }
+    j++;
+  }
+}
+
 int main(int argc, char *argv[]) {
   char *p;
+
+  // Mode so we don't have to run all 
   if (argc < 2) {
     printf("Usage: ./cache_predictor operation_number\n" \
         "1: Generate cache size data\n" \
-        "2: Generate cache line data\n");
+        "2: Generate cache line data\n" \
+        "3: Generate associativity data\n"
+        );
     return 0;
   }
   else {
@@ -120,6 +145,7 @@ int main(int argc, char *argv[]) {
     mode = conv;
   }
 
+  // ONLY FOR LINUX, DOES NOT WORK ON MAC OR WINDOWS
   // For multi processor architecture, we want this process to be run in a processor only
   cpu_set_t set;
   CPU_ZERO(&set);
@@ -143,6 +169,12 @@ int main(int argc, char *argv[]) {
       run_cache_size_test();
       printf("element,time\n");
       run_cache_line_test();
+      break;
+    case 3:
+      // Associativity test
+      run_cache_size_test();
+      printf("element,time\n");
+      run_associativity_test();
       break;
   }
 
