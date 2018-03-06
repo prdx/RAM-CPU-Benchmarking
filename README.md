@@ -1,3 +1,7 @@
+_Limitation: Not yet tested on Windows machine_
+
+*cpu_cache_info.c is provided as a baseline to get the real values on Linux machine*
+
 # Memory Predictor
 
 ## Design
@@ -99,9 +103,13 @@ Following the paper, we want to measure:
 make 
 ./cache_predictor 1 // Run the cache size
 ./cache_predictor 2 // Run the cache line size
+./cache_predictor 3 // Run the CPU associativity
 
 ```
 
+To run on mac, remove the CPU affinity code, as the CPU affinity functions only work on Linux machine.
+
 ## Result
 
-Please refer to the ram_predictor.ipynb or ram_predictor.pdf.
+Please refer to the Cache.ipynb or Cache.pdf.
+All the results are in *.csv* files.
