@@ -1,32 +1,35 @@
-#include <stdio.h>
+#include "ram_predictor.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <time.h>
-#include "ram_predictor.h"
-
+#include <unistd.h>
 
 #define PAGE_SIZE sysconf(_SC_PAGESIZE)
 #define BLOCK_SIZE 4194304
 
-// This is the maximum number of page fault before we can decide if 
-// we have reached the full memory
-#define DATA_SIZE BLOCK_SIZE - sizeof(address_info_t) 
+// This is the amount we will allocate the memory using memset
+// Change the BLOCK_SIZE to PAGE_SIZE to make it faster (but less accurate)
+#define DATA_SIZE BLOCK_SIZE - sizeof(address_info_t)
 
-// If the time we get is greater than PF_INDICATOR_FACTOR * avg time, then 
+// If the time we get is greater than PF_INDICATOR_FACTOR * avg time, then
 // it means it is page fault
 #define PF_INDICATOR_FACTOR 2
 
+// This is the maximum number of page fault before we can decide if
+// we have reached the full memory
 #define MAX_CONSECUTIVE_PF 10
 
 uint64_t total_memory = 0;
-address_info_t *head = NULL;
-address_info_t *tail = NULL;
+address_info_t* head = NULL;
+address_info_t* tail = NULL;
 unsigned total_element = 0;
 
 // Measure the memset performance and return the time
-double mem_benchmark(address_info_t *addr, size_t size) {
+double
+mem_benchmark(address_info_t* addr, size_t size)
+{
   clock_t start, end;
   char byte = 'c';
   double delta_time;
@@ -35,12 +38,14 @@ double mem_benchmark(address_info_t *addr, size_t size) {
   // Memset here
   memset(addr, byte, size);
   end = clock();
-  delta_time = ((double) (end - start));
+  delta_time = ((double)(end - start));
   return delta_time;
 }
 
 // Push to linked list
-void push(address_info_t* node) {
+void
+push(address_info_t* node)
+{
   total_element += 1;
   // If list is empty, add the new node as head
   if (head == NULL) {
@@ -52,14 +57,14 @@ void push(address_info_t* node) {
   tail = node;
 }
 
-// Count the stats
-
 // Get number of page fault
-int get_page_fault() {
+int
+get_page_fault()
+{
   int counter = 0;
-  address_info_t *curr = head;
+  address_info_t* curr = head;
 
-  while(curr != NULL) {
+  while (curr != NULL) {
     double prev_time = curr->time;
     double new_time = mem_benchmark(curr + sizeof(address_info_t), DATA_SIZE);
 
@@ -73,11 +78,13 @@ int get_page_fault() {
   return counter;
 }
 
-int main() {
+int
+main()
+{
   int consecutive_page_fault = 0;
 
-  while(1) {
-    address_info_t *addr;
+  while (1) {
+    address_info_t* addr;
 
     if ((addr = malloc(BLOCK_SIZE)) == NULL)
       return -1;
@@ -93,12 +100,14 @@ int main() {
     int num_of_page_fault = get_page_fault();
 
     // If zero page fault in the middle, we reset the counter
-    if (num_of_page_fault > 0) 
+    if (num_of_page_fault > 0)
       consecutive_page_fault++;
     else
       consecutive_page_fault = 0;
 
-    printf("Total memory requested: %lu, Page fault: %d\n", total_memory, num_of_page_fault);
+    printf("Total memory requested: %lu, Page fault: %d\n",
+           total_memory,
+           num_of_page_fault);
 
     if (consecutive_page_fault > MAX_CONSECUTIVE_PF)
       break;
@@ -107,5 +116,4 @@ int main() {
   printf("Predicted memory: %lu\n", total_memory);
   return 0;
 }
-
 
